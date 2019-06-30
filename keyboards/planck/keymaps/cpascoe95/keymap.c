@@ -37,7 +37,8 @@ enum planck_keycodes {
   BACKLIT,
   EXT_PLV,
   SEND_YES,
-  SEND_NO
+  SEND_NO,
+  VIM_CNF
 };
 
 #define LOWER MO(_LOWER)
@@ -160,7 +161,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * |      |      |      |Aud on|Audoff|AGnorm|AGswap|Qwerty|Colemk|Dvorak|Plover|      |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |Voice-|Voice+|Mus on|Musoff|MIDIon|MIDIof|      |      |      |      |      |
+ * |      |Voice-|Voice+|Mus on|Vimcnf|MIDIon|MIDIof|      |      |      |      |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |             |      |      |      |      |      |
  * `-----------------------------------------------------------------------------------'
@@ -168,7 +169,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_ADJUST] = LAYOUT_planck_grid(
     _______, RESET,   DEBUG,   RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD,  RGB_VAI, RGB_VAD, KC_DEL ,
     _______, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK,  DVORAK,  PLOVER,  _______,
-    _______, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  TERM_ON, TERM_OFF, _______, _______, _______,
+    _______, MUV_DE,  MUV_IN,  MU_ON,   VIM_CNF,  MI_ON,   MI_OFF,  TERM_ON, TERM_OFF, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______
 )
 
@@ -258,6 +259,69 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case SEND_NO:
       if (record->event.pressed) {
         SEND_STRING("n\n");
+      }
+      return false;
+      break;
+    case VIM_CNF:
+      if (record->event.pressed) {
+        SEND_STRING(":set nocompatible\n");
+        SEND_STRING(":filetype plugin indent on\n");
+        SEND_STRING(":let mapleader= \"\\\\\"\n");
+        SEND_STRING(":set backspace=indent,eol,start\n");
+        SEND_STRING(":set tabstop=2\n");
+        SEND_STRING(":set shiftwidth=2\n");
+        SEND_STRING(":set softtabstop=2\n");
+        SEND_STRING(":set shiftround\n");
+        SEND_STRING(":set autoindent\n");
+        SEND_STRING(":set smartindent\n");
+        SEND_STRING(":set expandtab\n");
+        SEND_STRING(":set nowrap\n");
+        SEND_STRING(":set nostartofline\n");
+        SEND_STRING(":set modeline\n");
+        SEND_STRING(":set number\n");
+        SEND_STRING(":set relativenumber\n");
+        SEND_STRING(":set incsearch\n");
+        SEND_STRING(":set nowrapscan\n");
+        SEND_STRING(":autocmd BufNewFile,BufRead * exec \"setlocal colorcolumn=\".(&ma ? \"81\" : \"0\")\n");
+        SEND_STRING(":syntax enable\n");
+
+        SEND_STRING(":function! InsertModeChanged(mode)\n");
+        SEND_STRING("   if a:mode == 'i'\n");
+        SEND_STRING("        highlight LineNr ctermfg=45\n");
+        SEND_STRING("        highlight CursorLineNr ctermfg=33\n");
+        SEND_STRING("    elseif a:mode == 'r'\n");
+        SEND_STRING("        highlight LineNr ctermfg=202\n");
+        SEND_STRING("        highlight CursorLineNr ctermfg=196\n");
+        SEND_STRING("    else\n");
+        SEND_STRING("        highlight LineNr ctermfg=244\n");
+        SEND_STRING("        highlight CursorLineNr ctermfg=238\n");
+        SEND_STRING("    endif\n");
+        SEND_STRING("endfunction\n");
+        SEND_STRING(":autocmd InsertEnter * call InsertModeChanged(v:insertmode)\n");
+        SEND_STRING(":autocmd InsertLeave * call InsertModeChanged('')\n");
+        SEND_STRING(":call InsertModeChanged('')\n");
+
+        SEND_STRING(":nnoremap <expr> ` printf('`\%czz', getchar())\n");
+        SEND_STRING(":noremap <leader>i `iO\n");
+
+        SEND_STRING(":set hidden\n");
+        SEND_STRING(":nmap <silent> <leader>Tn <Esc>:tabnew<CR>\n");
+        SEND_STRING(":nmap <silent> <leader>bb <Esc>:b#<CR>zz\n");
+        SEND_STRING(":nmap <silent> <leader>bq <Esc>:call CloseBuffer()<CR>\n");
+        SEND_STRING(":nmap <silent> <leader>bw <Esc>:w<CR>:call CloseBuffer()<CR>\n");
+        SEND_STRING(":nmap <silent> \\| <Esc>:b#<CR>zz\n");
+
+        SEND_STRING(":inoremap <C-s> <Esc>:wa<CR>\n");
+        SEND_STRING(":nnoremap <C-s> <Esc>:wa<CR>\n");
+        SEND_STRING(":command! Q wqa\n");
+
+        SEND_STRING(":setlocal completeopt=longest,menuone\n");
+        SEND_STRING(":fun! ShouldAutocomplete()\n");
+        SEND_STRING("    return pumvisible() || !(strpart(getline('.'), 0, col('.') - 1) =~ '^\\s*$')\n");
+        SEND_STRING("endfun\n");
+        SEND_STRING(":imap <expr> <Tab> ShouldAutocomplete() ? '<C-p>' : '<Tab>'\n");
+        SEND_STRING(":imap <expr> <Up> pumvisible() ? '<C-p>' : '<Up>'\n");
+        SEND_STRING(":imap <expr> <Down> pumvisible() ? '<C-n>' : '<Down>'\n");
       }
       return false;
       break;
