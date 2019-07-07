@@ -41,6 +41,15 @@ enum planck_keycodes {
   VIM_CNF
 };
 
+enum unicode_names {
+  EM_DASH
+};
+
+
+const uint32_t PROGMEM unicode_map[] = {
+  [EM_DASH] = 0x2014
+};
+
 #define LOWER MO(_LOWER)
 #define RAISE MO(_RAISE)
 
@@ -106,7 +115,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * |------+------+------+------+------+-------------+------+------+------+------+------|
  * | Del  |   _  |   +  |   -  |   =  |      | Bksp |Enter | Yes  |   {  |   }  |  |   |
  * |------+------+------+------+------+------|------+------+------+------+------+------|
- * |      |      |      |      |      |      |      |ISO ~ | No   |   [  |   ]  |      |
+ * |      |      |      |   —  |      |      |      |ISO ~ | No   |   [  |   ]  |      |
  * |------+------+------+------+------+------+------+------+------+------+------+------|
  * |      |      |      |      |      |             |      | Next | Vol- | Vol+ | Play |
  * `-----------------------------------------------------------------------------------'
@@ -114,7 +123,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_LOWER] = LAYOUT_planck_grid(
     RALT(KC_I), KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC, KC_CIRC, KC_AMPR,    KC_ASTR,    KC_LPRN, KC_RPRN, KC_BSPC,
     KC_DEL,  KC_UNDS, KC_PLUS, KC_MINS, KC_EQL,  _______, KC_BSPC, KC_ENT,     SEND_YES,   KC_LCBR, KC_RCBR, KC_PIPE,
-    _______, _______, _______, _______, _______, _______, _______,  S(KC_NUHS),SEND_NO,    KC_LBRC, KC_RBRC, _______,
+    _______, _______, _______, X(EM_DASH), _______, _______, _______,  S(KC_NUHS),SEND_NO,    KC_LBRC, KC_RBRC, _______,
     _______, _______, _______, _______, _______, _______, _______, _______,    KC_MNXT,    KC_VOLD, KC_VOLU, KC_MPLY
 ),
 
@@ -167,7 +176,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  * `-----------------------------------------------------------------------------------'
  */
 [_ADJUST] = LAYOUT_planck_grid(
-    _______, RESET,   DEBUG,   RGB_TOG, RGB_MOD, RGB_HUI, RGB_HUD, RGB_SAI, RGB_SAD,  RGB_VAI, RGB_VAD, KC_DEL ,
+    _______, RESET,   DEBUG,   UNICODE_MODE_LNX, UNICODE_MODE_OSX, _______, _______, _______, _______,  _______, _______, KC_DEL ,
     _______, _______, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK,  DVORAK,  PLOVER,  _______,
     _______, MUV_DE,  MUV_IN,  MU_ON,   VIM_CNF,  MI_ON,   MI_OFF,  TERM_ON, TERM_OFF, _______, _______, _______,
     _______, _______, _______, _______, _______, _______, _______, _______, _______,  _______, _______, _______
