@@ -136,6 +136,20 @@ uint32_t layer_state_set_user(uint32_t state) {
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
+    case UNICODE_MODE_LNX:
+      if (record->event.pressed){
+        SEND_STRING("L");
+      }
+      // Continue to process the key as normal
+      return true;
+      break;
+    case UNICODE_MODE_OSX:
+      if (record->event.pressed){
+        SEND_STRING("M");
+      }
+      // Continue to process the key as normal
+      return true;
+      break;
     case QWERTY:
       if (record->event.pressed) {
         print("mode just switched to qwerty and this is a huge string\n");
